@@ -1,0 +1,115 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+#define REAL double
+REAL EPS = 1e-9;
+
+void PrintMatrix(REAL** A, int n, int m) {
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cout << A[i][j] << "\t";
+		}
+		cout << endl;
+	}
+}
+//Это только прямой проход
+void GaussMethod(REAL** A, REAL* x, int n) {
+	int ind;
+	bool singular = false;
+
+
+	for (int i = 0; i < n; i++) {
+		REAL max = abs(A[i][i]);
+		ind = i;
+
+
+		for (int j = i + 1; j < n; j++) {
+			if (abs(A[j][i] > max)) {
+				max = abs(A[j][i]);
+				ind = j;
+			}
+		}
+	
+		if (max < EPS) {
+			singular = true;
+			cout << "singular matrix";
+			return;
+		}
+
+
+		swap(A[i], A[ind]);
+			
+	
+		for (int p = 1; p < n; p++) {
+			for (int j = 1; j < n + 1; j++) {
+				if (abs(A[p][j]) < EPS) {
+					A[p][j] = 0;
+				}
+			}
+		}
+
+		double c;
+
+
+		for (int p = i + 1; p < n; p++) {
+			c = A[p][i] / A[i][i];
+			for (int j = 0; j < n + 1; j++) {
+				A[p][j] -= c * A[i][j];
+			}
+		}
+
+		
+	}
+
+//void BackGaussNethod(double** A, double)
+	for (int i = n - 1; i >= 0; i--) {
+		for (int j = i + 1; j < n; j++) {
+			A[i][n] -= A[i][j] * x[j];
+		}
+		x[i] = A[i][n] / A[i][i];
+	}
+	
+}
+
+void QRMethod(REAL** A, REAL* x, int n) {
+
+}
+int main() {
+	
+	int n;
+	ofstream out("Otvet.txt");
+	ifstream file("matrix.txt");
+	while(true) {
+		file >> n;
+		if (n == 0)break;
+		REAL** A = new REAL * [n];
+		REAL* x = new REAL[n];
+
+		for (int i = 0; i < n; i++) {
+			A[i] = new REAL[n + 1];
+		}
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n + 1; j++) {
+				file >> A[i][j];
+			}
+		}
+		
+		GaussMethod(A, x, n);
+		
+		for (int i = 0; i < n; ++i) {
+			out << x[i] << endl;
+		}
+		out << endl;
+		
+		cout << "Method compled"<<'\t';
+		for (int i = 0; i < n; ++i)
+			delete[] A[i];
+		delete[] A;
+		delete[] x;
+	}
+	out.close();
+	file.close();
+	
+}
